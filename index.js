@@ -1,11 +1,16 @@
-const express = require('express')
-const dotenv = require('dotenv')
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express()
 dotenv.config();
 const port = process.env.PORT;
 
 const uri = process.env.MONGODB_URI;
+
+// permissions
+app.use(cors());
+app.use(express.json());
 
 
 const client = new MongoClient(uri, {
@@ -24,6 +29,7 @@ async function run() {
 
         const db = client.db('car-rental');
         const carsCollection = db.collection('cars');
+        const bookingsCollection = db.collection('bookings');
 
         app.get('/cars', async (req, res) => {
 
@@ -40,6 +46,18 @@ async function run() {
 
         })
 
+        app.post('/bookings', async (req, res) => {
+            const bookingInfo = req.body;
+            const result = await bookingsCollection.insertOne(bookingInfo);
+            res.json(result);
+
+        })
+        app.get('/bookings/:userId', async (req, res) => {
+            const { userId } = req.params;
+            const result = await bookingsCollection.find({ userId }).toArray();
+            res.json(result);
+
+        })
 
 
 
