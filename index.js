@@ -65,6 +65,12 @@ async function run() {
             res.json(result);
 
         })
+        app.get('/added-car/:userId', async (req, res) => {
+            const { userId } = req.params;
+            const result = await carsCollection.find({ userId }).toArray();
+            res.json(result);
+
+        })
 
 
 
