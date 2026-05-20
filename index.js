@@ -69,7 +69,7 @@ async function run() {
             res.json(result);
 
         })
-        app.patch('/cars/:carId', async (req, res) => {
+        app.patch('/cars/:carId', verifyToken, async (req, res) => {
 
             const { carId } = req.params;
             const updateData = req.body;
@@ -97,7 +97,7 @@ async function run() {
             res.json(result);
 
         })
-        app.get('/bookings/:userId', async (req, res) => {
+        app.get('/bookings/:userId', verifyToken, async (req, res) => {
             const { userId } = req.params;
             const result = await bookingsCollection.find({ userId }).toArray();
             res.json(result);
@@ -110,7 +110,7 @@ async function run() {
             res.json(result);
 
         })
-        app.get('/added-car/:userId', async (req, res) => {
+        app.get('/added-car/:userId', verifyToken, async (req, res) => {
             const { userId } = req.params;
             const result = await carsCollection.find({ userId }).toArray();
             res.json(result);
