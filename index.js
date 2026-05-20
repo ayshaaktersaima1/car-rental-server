@@ -91,7 +91,7 @@ async function run() {
 
             })
 
-        app.post('/bookings', async (req, res) => {
+        app.post('/bookings', verifyToken, async (req, res) => {
             const bookingInfo = req.body;
             const result = await bookingsCollection.insertOne(bookingInfo);
             res.json(result);
@@ -104,7 +104,7 @@ async function run() {
 
         })
 
-        app.post('/cars', async (req, res) => {
+        app.post('/cars', verifyToken, async (req, res) => {
             const addedCar = req.body;
             const result = await carsCollection.insertOne(addedCar);
             res.json(result);
@@ -116,7 +116,7 @@ async function run() {
             res.json(result);
 
         })
-        app.delete('/added-car/:carId', async (req, res) => {
+        app.delete('/added-car/:carId', verifyToken, async (req, res) => {
             const { carId } = req.params;
             const result = await carsCollection.deleteOne({ _id: new ObjectId(carId) });
             res.json(result);
