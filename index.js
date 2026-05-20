@@ -59,6 +59,13 @@ async function run() {
 
         })
 
+        app.post('/cars', async (req, res) => {
+            const addedCar = req.body;
+            const result = await carsCollection.insertOne(addedCar);
+            res.json(result);
+
+        })
+
 
 
 
