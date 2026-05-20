@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs');
 const app = express()
 dotenv.config();
 const port = process.env.PORT;
@@ -20,6 +21,37 @@ const client = new MongoClient(uri, {
         deprecationErrors: true,
     }
 });
+
+
+const JWKS = createRemoteJWKSet(
+    new URL('http://localhost:3000/api/auth/jwks')
+)
+
+const verifyToken = async (req, res, next) => {
+
+    const authHeader = req?.headers?.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+        const { payload } = await jwtVerify(token, JWKS);
+        console.log(payload)
+        next();
+
+    }
+    catch (error) {
+        return res.status(403).json({ message: "Forbidden" });
+    }
+}
+
+
 
 async function run() {
     try {
@@ -50,13 +82,14 @@ async function run() {
 
         })
 
-        app.get('/cars/:id', async (req, res) => {
+        app.get('/cars/:id', verifyToken,
+            async (req, res) => {
 
-            const { id } = req.params;
-            const result = await carsCollection.findOne({ _id: new ObjectId(id) });
-            res.json(result);
+                const { id } = req.params;
+                const result = await carsCollection.findOne({ _id: new ObjectId(id) });
+                res.json(result);
 
-        })
+            })
 
         app.post('/bookings', async (req, res) => {
             const bookingInfo = req.body;
