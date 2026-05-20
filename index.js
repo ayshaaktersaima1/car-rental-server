@@ -37,6 +37,18 @@ async function run() {
             res.json(result);
 
         })
+        app.patch('/cars/:carId', async (req, res) => {
+
+            const { carId } = req.params;
+            const updateData = req.body;
+
+
+            const result = await carsCollection.updateOne(
+                { _id: new ObjectId(carId) },
+                { $set: updateData })
+            res.json(result);
+
+        })
 
         app.get('/cars/:id', async (req, res) => {
 
