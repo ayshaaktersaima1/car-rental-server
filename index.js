@@ -109,6 +109,17 @@ async function run() {
         app.post('/bookings', verifyToken, async (req, res) => {
             const bookingInfo = req.body;
             const result = await bookingsCollection.insertOne(bookingInfo);
+
+            const updateCount = await carsCollection.updateOne(
+                {
+                    _id: new ObjectId(bookingInfo.carId)
+                },
+                {
+                    $inc: {
+                        booking_count: 1
+                    }
+                }
+            );
             res.json(result);
 
         })
