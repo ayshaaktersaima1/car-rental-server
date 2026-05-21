@@ -65,7 +65,7 @@ async function run() {
 
         app.get('/cars', async (req, res) => {
 
-            const { search } = req.query;
+            const { search, type } = req.query;
 
             let query = {};
 
@@ -74,6 +74,10 @@ async function run() {
                     $regex: search,
                     $options: 'i'
                 };
+            }
+
+            if (type) {
+                query.carType = type.toLowerCase();
             }
 
             const result = await carsCollection.find(query).toArray();
