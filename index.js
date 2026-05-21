@@ -65,7 +65,18 @@ async function run() {
 
         app.get('/cars', async (req, res) => {
 
-            const result = await carsCollection.find().toArray();
+            const { search } = req.query;
+
+            let query = {};
+
+            if (search) {
+                query.carName = {
+                    $regex: search,
+                    $options: 'i'
+                };
+            }
+
+            const result = await carsCollection.find(query).toArray();
             res.json(result);
 
         })
@@ -122,6 +133,7 @@ async function run() {
             res.json(result);
 
         })
+
 
 
 
